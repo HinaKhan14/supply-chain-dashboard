@@ -17,7 +17,7 @@ function BoothPage() {
     // Load booth status from DB
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/get-booth-status/${id}`)
+            .get(`${process.env.REACT_APP_API_URL}/api/get-booth-status/${id}`)
             .then((res) => {
                 console.log("Booth status →", res.data);
 
@@ -39,7 +39,7 @@ function BoothPage() {
 
         try {
             await axios.put(
-                `http://localhost:5000/api/update-booth-status/${id}`,
+                `${process.env.REACT_APP_API_URL}/api/update-booth-status/${id}`,
                 { boothStatus: newStatus }
             );
 

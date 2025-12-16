@@ -13,7 +13,7 @@ const DashboardBoothCards = ({ status }) => {
     const fetchActiveProduct = async (boothNo) => {
         try {
             const res = await axios.get(
-                `http://localhost:5000/api/get-active-product/${boothNo}`
+                `${process.env.REACT_APP_API_URL}/api/get-active-product/${boothNo}`
             );
 
             setActiveProducts((prev) => ({

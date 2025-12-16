@@ -14,7 +14,7 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/sheet-data")
+            .get(`${process.env.REACT_APP_API_URL}/api/sheet-data`)
             .then((res) => {
                 console.log("res data -->", res.data)
                 setData(res.data)
@@ -23,7 +23,7 @@ const Dashboard = () => {
     }, []);
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/get-all-booths-status`)
+            .get(`${process.env.REACT_APP_API_URL}/api/get-all-booths-status`)
             .then((res) => {
 
                 setBoothStatus(res.data)

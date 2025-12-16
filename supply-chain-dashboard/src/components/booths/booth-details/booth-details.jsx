@@ -46,7 +46,7 @@ export default function BoothDetails({ id, selectedDate }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/sheet-data")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/sheet-data`)
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -69,7 +69,7 @@ export default function BoothDetails({ id, selectedDate }) {
         if (!window.confirm("Are you sure you want to delete this row?")) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/delete-booth-row/${rowId}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-booth-row/${rowId}`);
             fetchBoothData(); // refresh table
         } catch (err) {
             console.error(err);
@@ -86,7 +86,7 @@ export default function BoothDetails({ id, selectedDate }) {
             skipEmptyLines: true,
             complete: async (result) => {
                 try {
-                    await axios.post("http://localhost:5000/api/upload-booth-csv", {
+                    await axios.post(`${process.env.REACT_APP_API_URL}/api/upload-booth-csv`, {
                         boothId: id,
                         rows: result.data
                     });
@@ -102,7 +102,7 @@ export default function BoothDetails({ id, selectedDate }) {
     };
 
     const fetchBoothData = () => {
-        axios.get(`http://localhost:5000/api/get-booth-data/${id}`, {
+        axios.get(`${process.env.REACT_APP_API_URL}/api/get-booth-data/${id}`, {
             params: {
                 date: selectedDate.toISOString().split("T")[0]
             }
@@ -149,7 +149,7 @@ export default function BoothDetails({ id, selectedDate }) {
 
             setActiveStart(no); // mark this as the active start
 
-            await axios.put("http://localhost:5000/api/update-start-time", {
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, {
                 no,
                 startTime: start
             });
@@ -162,7 +162,7 @@ export default function BoothDetails({ id, selectedDate }) {
 
             setActiveStart(null); // no active start
 
-            await axios.put("http://localhost:5000/api/update-start-time", { no, startTime: "" });
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, { no, startTime: "" });
         }
 
         fetchBoothData();
@@ -190,7 +190,7 @@ export default function BoothDetails({ id, selectedDate }) {
             // Clear activeStart only if this row was the active one
             if (activeStart === no) setActiveStart(null);
 
-            await axios.put("http://localhost:5000/api/update-end-time", {
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
                 no,
                 endTime: end,
                 totalTime: total
@@ -204,7 +204,7 @@ export default function BoothDetails({ id, selectedDate }) {
                 [no]: { ...prev[no], end: null, totalTime: null }
             }));
 
-            await axios.put("http://localhost:5000/api/update-end-time", {
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
                 no,
                 endTime: "",
                 totalTime: ""

@@ -44,7 +44,7 @@ export default function TableModal({ buttonName, data, id, onSuccess }) {
         };
 
         try {
-            const res = await axios.post("http://localhost:5000/api/add-booth-data", payload);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-booth-data`, payload);
             console.log("Saved!", res.data);
 
             // 🔥 REFRESH booth table from parent

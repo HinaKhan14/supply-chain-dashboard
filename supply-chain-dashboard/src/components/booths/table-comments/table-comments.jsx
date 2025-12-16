@@ -17,7 +17,7 @@ export default function TableComments({ rowId, existingComment, onSaved }) {
     }, [existingComment]);
 
     const handleSave = async () => {
-        await axios.put("http://localhost:5000/api/update-comment", {
+        await axios.put(`${process.env.REACT_APP_API_URL}/api/update-comment`, {
             id: rowId,
             comment
         });
