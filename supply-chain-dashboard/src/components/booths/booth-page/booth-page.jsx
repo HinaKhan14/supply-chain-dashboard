@@ -13,6 +13,7 @@ function BoothPage() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isBoothActive, setIsBoothActive] = useState(false);
+    const [user, setUser] = useState(null);
 
     // Load booth status from DB
     useEffect(() => {
@@ -30,6 +31,11 @@ function BoothPage() {
             })
             .catch((err) => console.error(err));
     }, [id]);
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        setUser(userData);
+    }, []);
+    const dashboardTitle = user?.name === "admin" ? "ADMIN" : "BOOTH";
 
     // Handle toggle
     const handleBoothToggle = async (checked) => {
@@ -57,7 +63,7 @@ function BoothPage() {
             <div className="dashboard-section">
 
                 <div>
-                    <h1 className="admin-header">BOOTH DASHBOARD</h1>
+                    <h1 className="admin-header">{dashboardTitle} DASHBOARD</h1>
                     <div className="booth">Booth # {id}</div>
 
                     {/* Switch */}
@@ -66,6 +72,7 @@ function BoothPage() {
 
                         <Switch
                             {...label}
+                            disabled={user?.name === "admin" ? 'disabled' : ''}
                             color="success"
                             checked={isBoothActive}
                             onChange={(e) => handleBoothToggle(e.target.checked)}

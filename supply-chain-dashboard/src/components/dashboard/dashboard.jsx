@@ -58,7 +58,7 @@ const Dashboard = () => {
                 {/* Booth Section */}
                 <div className="main-section">
                     <DashboardBoothCards status={boothStatus} />
-                    <QuickAction />
+                    {/* <QuickAction /> */}
 
                 </div>
                 {/* Dashboard Stats */}

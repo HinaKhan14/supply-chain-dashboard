@@ -11,12 +11,22 @@ import axios from "axios";
 export default function TableComments({ rowId, existingComment, onSaved }) {
     const [open, setOpen] = React.useState(false);
     const [comment, setComment] = React.useState(existingComment || "");
+    const [user, setUser] = React.useState(null);
 
     React.useEffect(() => {
         setComment(existingComment);
     }, [existingComment]);
 
+    React.useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        setUser(userData);
+    }, []);
+
+    const isBoothUser = user?.name !== "admin";
+
     const handleSave = async () => {
+        if (!isBoothUser) return;
+
         await axios.put(`${process.env.REACT_APP_API_URL}/api/update-comment`, {
             id: rowId,
             comment
@@ -34,6 +44,7 @@ export default function TableComments({ rowId, existingComment, onSaved }) {
 
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Add Comment</DialogTitle>
+
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -44,18 +55,21 @@ export default function TableComments({ rowId, existingComment, onSaved }) {
                         variant="standard"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
+                        disabled={!isBoothUser}   // ✅ DISABLED FOR ADMIN
                     />
 
                     {/* Display existing saved comment */}
                     {existingComment && (
-                        <div style={{
-                            marginTop: "20px",
-                            padding: "10px",
-                            background: "#f5f5f5",
-                            borderRadius: "8px",
-                            fontSize: "14px",
-                            color: "#333"
-                        }}>
+                        <div
+                            style={{
+                                marginTop: "20px",
+                                padding: "10px",
+                                background: "#f5f5f5",
+                                borderRadius: "8px",
+                                fontSize: "14px",
+                                color: "#333"
+                            }}
+                        >
                             <strong>Saved Comment:</strong>
                             <br />
                             {existingComment}
@@ -64,8 +78,14 @@ export default function TableComments({ rowId, existingComment, onSaved }) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={() => setOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button onClick={() => setOpen(false)}>Close</Button>
+
+                    <Button
+                        onClick={handleSave}
+                        disabled={!isBoothUser}   // ✅ SAVE DISABLED FOR ADMIN
+                    >
+                        Save
+                    </Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>

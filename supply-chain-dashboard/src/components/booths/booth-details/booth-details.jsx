@@ -214,6 +214,21 @@ export default function BoothDetails({ id, selectedDate }) {
         fetchBoothData();
     };
 
+    const hoursToMinutes = (hrs) => {
+        if (!hrs) return 0;
+        return Math.round(parseFloat(hrs) * 60);
+    };
+
+    const getDifference = (row) => {
+        if (!row.endTime || !row.TotalTime) return null;
+
+        const totalHrsMinutes = hoursToMinutes(row.totalHrs);
+        const actualMinutes = row.TotalTime;
+
+        return totalHrsMinutes - actualMinutes;
+    };
+
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -228,6 +243,7 @@ export default function BoothDetails({ id, selectedDate }) {
                         <StyledTableCell>Start</StyledTableCell>
                         <StyledTableCell>End</StyledTableCell>
                         <StyledTableCell>Total Time</StyledTableCell>
+                        <StyledTableCell>T.H - T.T</StyledTableCell>
                         <StyledTableCell> </StyledTableCell>
                         <StyledTableCell> </StyledTableCell>
                     </TableRow>
@@ -241,7 +257,10 @@ export default function BoothDetails({ id, selectedDate }) {
                             <StyledTableCell>{row.materialDescription}</StyledTableCell>
                             <StyledTableCell>{row.setupHrs}</StyledTableCell>
                             <StyledTableCell>{row.processHrs}</StyledTableCell>
-                            <StyledTableCell>{row.totalHrs}</StyledTableCell>
+                            <StyledTableCell>
+                                {hoursToMinutes(row.totalHrs)} mins
+                            </StyledTableCell>
+
 
                             <StyledTableCell>
                                 <FormGroup>
@@ -289,10 +308,37 @@ export default function BoothDetails({ id, selectedDate }) {
                                     : ""}
                             </StyledTableCell>
                             <StyledTableCell>
-                                <DeleteIcon
-                                    onClick={() => handleDelete(row._id)}
-                                    style={{ cursor: "pointer" }}
-                                />
+                                {(() => {
+                                    const diff = getDifference(row);
+                                    if (diff === null) return "";
+
+                                    return (
+                                        <span
+                                            style={{
+                                                fontWeight: "bold",
+                                                color: diff < 0 ? "red" : "green"
+                                            }}
+                                        >
+                                            {diff} mins
+                                        </span>
+                                    );
+                                })()}
+                            </StyledTableCell>
+
+                            <StyledTableCell>
+                                <StyledTableCell>
+                                    {user?.name === "admin" ? (
+                                        <DeleteIcon
+                                            onClick={() => handleDelete(row._id)}
+                                            style={{ cursor: "pointer", color: "red" }}
+                                        />
+                                    ) : (
+                                        <DeleteIcon
+                                            style={{ cursor: "not-allowed", color: "#ccc" }}
+                                        />
+                                    )}
+                                </StyledTableCell>
+
                             </StyledTableCell>
                             <StyledTableCell>
                                 <TableComments

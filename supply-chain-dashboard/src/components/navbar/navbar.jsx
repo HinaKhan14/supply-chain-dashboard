@@ -17,7 +17,7 @@ const Navbar = () => {
     return (
         <header className="dashboard-header">
             <div className="logo-section">
-                <img src={logo} alt="Hilton Pharma" className="logo" />
+                <a href="/"><img src={logo} alt="Hilton Pharma" className="logo" /></a>
             </div>
 
             <button className="signout-btn" onClick={handleLogout}>
