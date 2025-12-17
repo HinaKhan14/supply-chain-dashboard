@@ -48,3 +48,58 @@
     font-size: 13px;
     opacity: 0.8;
 }
+
+/* ===================== */
+/* Mobile Responsive CSS */
+/* ===================== */
+
+@media (max-width: 768px) {
+    .stats-section {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .stat-card {
+        padding: 15px 20px;
+        border-radius: 12px;
+        border-width: 6px;
+    }
+
+    .stat-title {
+        font-size: 16px;
+    }
+
+    .total-num {
+        font-size: 28px;
+    }
+
+    .stat-subtitle {
+        font-size: 12px;
+    }
+
+    .stat-card svg {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .stat-card {
+        padding: 12px 16px;
+    }
+
+    .total-num {
+        font-size: 24px;
+    }
+
+    .stat-title {
+        font-size: 15px;
+    }
+
+    .stat-card svg {
+        width: 30px;
+        height: 30px;
+    }
+}
