@@ -8,8 +8,14 @@ import boothStatusRoute from "./routes/boothStatusRoute.js"
 import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
-app.use(cors());
-app.use(express.json());          // 👈 REQUIRED
+app.use(cors({
+    origin: "*"
+}));
+
+app.use(express.json({ limit: "10mb" }));
+
+// app.use(cors());
+// app.use(express.json());          // 👈 REQUIRED
 app.use(express.urlencoded({ extended: true })); // optional but useful
 
 
