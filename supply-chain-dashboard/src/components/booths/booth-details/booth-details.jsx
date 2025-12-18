@@ -230,7 +230,7 @@ export default function BoothDetails({ id, selectedDate }) {
 
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="table-scroll">
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                     <TableRow>
@@ -353,7 +353,7 @@ export default function BoothDetails({ id, selectedDate }) {
 
                 <TableBody>
                     <StyledTableRow>
-                        <StyledTableCell colSpan={11} align="center">
+                        <StyledTableCell colSpan={12} align="center">
                             <div style={{ margin: "15px auto" }}>
                                 {user?.name === "admin" && (
                                     <>

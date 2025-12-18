@@ -241,3 +241,74 @@ body {
         width: 80%;
     }
 }
+
+/* =============================== */
+/* Responsive Booth Details Table */
+/* =============================== */
+
+/* Table horizontal scroll */
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent column wrapping */
+.table-scroll table {
+    min-width: 900px;
+    white-space: nowrap;
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+    .table-scroll table {
+        min-width: 800px;
+    }
+
+    .MuiTableCell-root {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 768px) {
+    .table-scroll {
+        margin: 0 -12px;
+        /* edge-to-edge scroll */
+    }
+
+    .MuiTableCell-root {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .MuiFormControlLabel-label {
+        font-size: 11px;
+    }
+
+    .MuiSwitch-root {
+        transform: scale(0.85);
+    }
+
+    .csv-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+    .MuiTableCell-root {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .MuiSwitch-root {
+        transform: scale(0.8);
+    }
+
+    .MuiSvgIcon-root {
+        font-size: 18px;
+    }
+}

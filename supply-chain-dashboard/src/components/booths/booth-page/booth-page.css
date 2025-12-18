@@ -55,3 +55,91 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 }
+
+/* =============================== */
+/* Booth Page Responsive Styling  */
+/* =============================== */
+
+@media (max-width: 1024px) {
+
+    .calendar-area,
+    .booth-area {
+        padding: 15px 40px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        text-align: center;
+    }
+
+    /* Booth label */
+    .booth {
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        right: 0;
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+    }
+
+    /* Calendar container */
+    .calendar-area {
+        padding: 15px 20px;
+        width: 100%;
+    }
+
+    /* Calendar bar buttons */
+    .calendar-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Calendar popup */
+    .calendar-area>div {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Switch container */
+    .dashboard-section div[style*="float"] {
+        float: none !important;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 15px;
+        position: static !important;
+    }
+
+    /* Booth table */
+    .booth-area {
+        padding: 15px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-header {
+        text-align: center;
+    }
+
+    .booth {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+
+    .calendar-area,
+    .booth-area {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .calendar-area input {
+        width: 100% !important;
+    }
+
+    button {
+        width: 100%;
+    }
+}
