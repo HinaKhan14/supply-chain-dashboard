@@ -16,6 +16,11 @@ import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
 import TableComments from "../table-comments/table-comments";
 import Papa from "papaparse";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -44,6 +49,10 @@ export default function BoothDetails({ id, selectedDate }) {
     const [tableState, setTableState] = useState({});
     const [activeStart, setActiveStart] = useState(null); // tracks which row has active start
     const [user, setUser] = useState(null);
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmType, setConfirmType] = useState(null); // "start" | "end"
+    const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/api/sheet-data`)
@@ -136,81 +145,138 @@ export default function BoothDetails({ id, selectedDate }) {
             .catch((err) => console.error(err));
     };
 
-    const handleStartSwitch = async (no, value) => {
+    // const handleStartSwitch = async (no) => {
+    //     const now = new Date();
+    //     const start = now.toLocaleTimeString([], {
+    //         hour: "2-digit",
+    //         minute: "2-digit"
+    //     });
+
+    //     setSwitchStart(prev => ({ ...prev, [no]: true }));
+    //     setTableState(prev => ({
+    //         ...prev,
+    //         [no]: { ...prev[no], start }
+    //     }));
+
+    //     setActiveStart(no);
+
+    //     await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, {
+    //         no,
+    //         startTime: start
+    //     });
+
+    //     fetchBoothData();
+    // };
+    const handleStartSwitch = (no, value) => {
         if (value) {
-            const now = new Date();
-            const start = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-            setSwitchStart(prev => ({ ...prev, [no]: true }));
-            setTableState(prev => ({
-                ...prev,
-                [no]: { ...prev[no], start }
-            }));
-
-            setActiveStart(no); // mark this as the active start
-
-            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, {
-                no,
-                startTime: start
-            });
-        } else {
-            setSwitchStart(prev => ({ ...prev, [no]: false }));
-            setTableState(prev => ({
-                ...prev,
-                [no]: { ...prev[no], start: null }
-            }));
-
-            setActiveStart(null); // no active start
-
-            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, { no, startTime: "" });
+            setConfirmType("start");
+            setSelectedRowId(no);
+            setConfirmOpen(true);
         }
-
-        fetchBoothData();
     };
 
-    const handleEndSwitch = async (no, value) => {
-        if (value) {
-            const now = new Date();
-            const end = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-            const start = tableState[no].start;
+    // const handleEndSwitch = async (no, value) => {
+    //     if (value) {
+    //         const now = new Date();
+    //         const end = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    //         const start = tableState[no].start;
+    //         let total = null;
+    //         if (start) {
+    //             const s = new Date(`2000-01-01 ${start}`);
+    //             const e = new Date(`2000-01-01 ${end}`);
+    //             total = Math.round((e - s) / 60000);
+    //         }
+
+    //         setSwitchEnd(prev => ({ ...prev, [no]: true }));
+    //         setTableState(prev => ({
+    //             ...prev,
+    //             [no]: { ...prev[no], end, totalTime: total }
+    //         }));
+
+    //         // Clear activeStart only if this row was the active one
+    //         if (activeStart === no) setActiveStart(null);
+
+    //         await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
+    //             no,
+    //             endTime: end,
+    //             totalTime: total
+    //         });
+
+    //     } else {
+    //         // User unchecked end switch → do NOT enable all start buttons
+    //         setSwitchEnd(prev => ({ ...prev, [no]: false }));
+    //         setTableState(prev => ({
+    //             ...prev,
+    //             [no]: { ...prev[no], end: null, totalTime: null }
+    //         }));
+
+    //         await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
+    //             no,
+    //             endTime: "",
+    //             totalTime: ""
+    //         });
+    //     }
+
+    //     fetchBoothData();
+    // };
+    const handleEndSwitch = (no, value) => {
+        if (value) {
+            setConfirmType("end");
+            setSelectedRowId(no);
+            setConfirmOpen(true);
+        }
+    };
+    const handleConfirmYes = async () => {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        if (confirmType === "start") {
+            setSwitchStart(prev => ({ ...prev, [selectedRowId]: true }));
+            setTableState(prev => ({
+                ...prev,
+                [selectedRowId]: { ...prev[selectedRowId], start: time }
+            }));
+
+            setActiveStart(selectedRowId);
+
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-start-time`, {
+                no: selectedRowId,
+                startTime: time
+            });
+        }
+
+        if (confirmType === "end") {
+            const start = tableState[selectedRowId]?.start;
             let total = null;
+
             if (start) {
                 const s = new Date(`2000-01-01 ${start}`);
-                const e = new Date(`2000-01-01 ${end}`);
+                const e = new Date(`2000-01-01 ${time}`);
                 total = Math.round((e - s) / 60000);
             }
 
-            setSwitchEnd(prev => ({ ...prev, [no]: true }));
+            setSwitchEnd(prev => ({ ...prev, [selectedRowId]: true }));
             setTableState(prev => ({
                 ...prev,
-                [no]: { ...prev[no], end, totalTime: total }
+                [selectedRowId]: {
+                    ...prev[selectedRowId],
+                    end: time,
+                    totalTime: total
+                }
             }));
 
-            // Clear activeStart only if this row was the active one
-            if (activeStart === no) setActiveStart(null);
-
             await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
-                no,
-                endTime: end,
+                no: selectedRowId,
+                endTime: time,
                 totalTime: total
-            });
-
-        } else {
-            // User unchecked end switch → do NOT enable all start buttons
-            setSwitchEnd(prev => ({ ...prev, [no]: false }));
-            setTableState(prev => ({
-                ...prev,
-                [no]: { ...prev[no], end: null, totalTime: null }
-            }));
-
-            await axios.put(`${process.env.REACT_APP_API_URL}/api/update-end-time`, {
-                no,
-                endTime: "",
-                totalTime: ""
             });
         }
 
+        setConfirmOpen(false);
+        setSelectedRowId(null);
+        setConfirmType(null);
         fetchBoothData();
     };
 
@@ -242,8 +308,8 @@ export default function BoothDetails({ id, selectedDate }) {
                         <StyledTableCell>T.H</StyledTableCell>
                         <StyledTableCell>Start</StyledTableCell>
                         <StyledTableCell>End</StyledTableCell>
-                        <StyledTableCell>Total Time</StyledTableCell>
-                        <StyledTableCell>T.H - T.T</StyledTableCell>
+                        <StyledTableCell>Actual Time</StyledTableCell>
+                        <StyledTableCell>T.H - A.T</StyledTableCell>
                         <StyledTableCell> </StyledTableCell>
                         <StyledTableCell> </StyledTableCell>
                     </TableRow>
@@ -269,14 +335,13 @@ export default function BoothDetails({ id, selectedDate }) {
                                             <Switch
                                                 checked={!!switchStart[row._id]}
                                                 onChange={(e) => handleStartSwitch(row._id, e.target.checked)}
-                                                // disable all starts except the active one
                                                 disabled={
-                                                    user?.name === "admin" ||   // admin cannot start
-                                                    (activeStart && activeStart !== row._id) ||
+                                                    user?.name === "admin" ||
+                                                    !!switchStart[row._id] ||     // 🔒 cannot turn OFF
                                                     !!switchEnd[row._id]
                                                 }
-
                                             />
+
                                         }
                                         label={tableState[row._id]?.start || ""}
                                     />
@@ -291,11 +356,12 @@ export default function BoothDetails({ id, selectedDate }) {
                                                 checked={!!switchEnd[row._id]}
                                                 onChange={(e) => handleEndSwitch(row._id, e.target.checked)}
                                                 disabled={
-                                                    user?.name === "admin" ||  // admin cannot end
+                                                    user?.name === "admin" ||
+                                                    !!switchEnd[row._id] ||      // 🔒 cannot turn OFF
                                                     !switchStart[row._id]
                                                 }
-
                                             />
+
                                         }
                                         label={tableState[row._id]?.end || ""}
                                     />
@@ -390,6 +456,26 @@ export default function BoothDetails({ id, selectedDate }) {
                     </StyledTableRow>
                 </TableBody>
             </Table>
+            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+                <DialogTitle>Confirmation</DialogTitle>
+
+                <DialogContent>
+                    Are you sure you want to
+                    <strong>
+                        {confirmType === "start" ? " START " : " END "}
+                    </strong>
+                    this process?
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => setConfirmOpen(false)}>No</Button>
+                    <Button variant="contained" onClick={handleConfirmYes}>
+                        Yes
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
         </TableContainer>
     );
 }

@@ -1,34 +1,35 @@
-import * as React from "react";
+import React, { useState, useMemo } from "react";
 import {
     Button,
     TextField,
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
+    DialogTitle
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 
 export default function TableModal({ buttonName, data, id, onSuccess }) {
-    const [open, setOpen] = React.useState(false);
-    const [selectedRow, setSelectedRow] = React.useState(null);
+    const [open, setOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
 
+    // ✅ handlers (FIXES ESLINT ERROR)
     const handleClickOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    const handleSelectChange = (event) => {
-        const code = event.target.value;
-        const row = data.find((item) => item.Material === code);
-        setSelectedRow(row || null);
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedRow(null);
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    // ✅ sort materials
+    const sortedData = useMemo(() => {
+        return [...data].sort((a, b) =>
+            a.Material.localeCompare(b.Material)
+        );
+    }, [data]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         if (!selectedRow) return;
 
         const payload = {
@@ -44,12 +45,12 @@ export default function TableModal({ buttonName, data, id, onSuccess }) {
         };
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-booth-data`, payload);
-            console.log("Saved!", res.data);
+            await axios.post(
+                `${process.env.REACT_APP_API_URL}/api/add-booth-data`,
+                payload
+            );
 
-            // 🔥 REFRESH booth table from parent
             if (onSuccess) onSuccess();
-
             handleClose();
         } catch (err) {
             console.error(err);
@@ -59,32 +60,32 @@ export default function TableModal({ buttonName, data, id, onSuccess }) {
     return (
         <>
             <Button variant="outlined" onClick={handleClickOpen}>
-                {buttonName || "Open Modal"}
+                {buttonName || "Add Data"}
             </Button>
 
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
                 <DialogTitle>Add Data</DialogTitle>
 
                 <DialogContent>
-                    <FormControl fullWidth margin="dense" variant="standard">
-                        <InputLabel>Select Material</InputLabel>
-                        <Select
-                            value={selectedRow ? selectedRow.Material : ""}
-                            onChange={handleSelectChange}
-                        >
-                            {data.map((row) => (
-                                <MenuItem key={row.Material} value={row.Material}>
-                                    {row.Material}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        options={sortedData}
+                        getOptionLabel={(option) => option.Material}
+                        onChange={(e, value) => setSelectedRow(value)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Select Material"
+                                variant="standard"
+                                margin="dense"
+                            />
+                        )}
+                    />
 
                     {selectedRow && (
                         <>
                             <TextField
                                 margin="dense"
-                                label="Material Name"
+                                label="Material Description"
                                 fullWidth
                                 variant="standard"
                                 value={selectedRow["Material Description"]}
@@ -123,7 +124,13 @@ export default function TableModal({ buttonName, data, id, onSuccess }) {
 
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSubmit} variant="contained">Submit</Button>
+                    <Button
+                        onClick={handleSubmit}
+                        variant="contained"
+                        disabled={!selectedRow}
+                    >
+                        Submit
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>

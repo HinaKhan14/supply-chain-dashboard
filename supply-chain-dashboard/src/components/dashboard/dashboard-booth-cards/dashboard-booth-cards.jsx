@@ -78,7 +78,7 @@ const DashboardBoothCards = ({ status }) => {
                                             {activeRow.materialDescription}
                                         </p>
                                         <p style={{ marginTop: "5px", color: "#555" }}>
-                                            Pending 🕒 <strong>{activeRow.startTime}</strong>
+                                            WIP 🕒 <strong>{activeRow.startTime}</strong>
                                         </p>
                                     </div>
                                 )}
